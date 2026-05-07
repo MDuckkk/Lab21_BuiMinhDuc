@@ -1,4 +1,4 @@
 # Sieu tham so cho mo hinh RandomForestClassifier
-n_estimators: 200
-max_depth: 10
-min_samples_split: 5
+n_estimators: 300
+max_depth: 15
+min_samples_split: 2
