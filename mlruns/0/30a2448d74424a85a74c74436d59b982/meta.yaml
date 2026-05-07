@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI_Vin/Lab/assignments/Day21-Track2-CI-CD-for-AI-Systems/mlruns/0/30a2448d74424a85a74c74436d59b982/artifacts
+end_time: 1778129746105
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 30a2448d74424a85a74c74436d59b982
+run_name: secretive-midge-985
+run_uuid: 30a2448d74424a85a74c74436d59b982
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1778129730447
+status: 3
+tags: []
+user_id: MDuck

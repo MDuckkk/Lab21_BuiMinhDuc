@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI_Vin/Lab/assignments/Day21-Track2-CI-CD-for-AI-Systems/mlruns/0/d22c9de4eee440bf905213998a72e691/artifacts
+end_time: 1778129937688
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d22c9de4eee440bf905213998a72e691
+run_name: defiant-fowl-873
+run_uuid: d22c9de4eee440bf905213998a72e691
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1778129928299
+status: 3
+tags: []
+user_id: MDuck

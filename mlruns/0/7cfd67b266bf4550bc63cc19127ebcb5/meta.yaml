@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/AI_Vin/Lab/assignments/Day21-Track2-CI-CD-for-AI-Systems/mlruns/0/7cfd67b266bf4550bc63cc19127ebcb5/artifacts
+end_time: 1778129841152
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7cfd67b266bf4550bc63cc19127ebcb5
+run_name: chill-wasp-679
+run_uuid: 7cfd67b266bf4550bc63cc19127ebcb5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1778129832297
+status: 3
+tags: []
+user_id: MDuck
