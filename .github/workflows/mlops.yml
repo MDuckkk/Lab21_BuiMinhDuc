@@ -74,17 +74,38 @@ jobs:
           print("Model uploaded to S3")
           EOF
 
-      - name: Save metrics as artifact
+      # Bonus 3: Upload report và metrics làm artifact
+      - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
           name: metrics
-          path: outputs/metrics.json
+          path: |
+            outputs/metrics.json
+            outputs/report.txt
 
   eval:
     name: Eval
     needs: train
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to AWS
+        run: |
+          CREDS='${{ secrets.CLOUD_CREDENTIALS }}'
+          AWS_KEY=$(echo $CREDS | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['aws_access_key_id'])")
+          AWS_SECRET=$(echo $CREDS | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['aws_secret_access_key'])")
+          echo "AWS_ACCESS_KEY_ID=$AWS_KEY" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=ap-southeast-1" >> $GITHUB_ENV
+
       - name: Check eval gate
         run: |
           python3 - <<'EOF'
@@ -92,6 +113,31 @@ jobs:
           if acc < 0.70:
               raise SystemExit(f"FAILED: accuracy {acc:.4f} < 0.70. Huy deploy.")
           print(f"PASSED: accuracy {acc:.4f} >= 0.70. Tien hanh deploy.")
+          EOF
+
+      # Bonus 4: So sánh với model cũ trên S3
+      - name: Compare with previous model
+        run: |
+          python3 - <<'EOF'
+          import boto3, json, os
+          new_acc = float("${{ needs.train.outputs.accuracy }}")
+          s3 = boto3.client("s3")
+          bucket = "${{ secrets.CLOUD_BUCKET }}"
+          try:
+              s3.download_file(bucket, "models/latest/metrics.json", "/tmp/prev_metrics.json")
+              with open("/tmp/prev_metrics.json") as f:
+                  prev = json.load(f)
+              prev_acc = prev.get("accuracy", 0)
+              print(f"Previous accuracy: {prev_acc:.4f} | New accuracy: {new_acc:.4f}")
+              if new_acc < prev_acc:
+                  print(f"[WARNING] Model mới ({new_acc:.4f}) thấp hơn model cũ ({prev_acc:.4f}). Vẫn deploy vì vượt ngưỡng 0.70.")
+              else:
+                  print(f"[OK] Model mới cải thiện so với model cũ (+{new_acc - prev_acc:.4f})")
+          except Exception:
+              print("[INFO] Không tìm thấy metrics cũ trên S3 — đây là lần deploy đầu tiên.")
+          # Upload metrics mới lên S3 để lần sau so sánh
+          s3.upload_file("outputs/metrics.json", bucket, "models/latest/metrics.json")
+          print("Metrics uploaded to S3 for future comparison.")
           EOF
 
   deploy:
