@@ -119,7 +119,7 @@ jobs:
       - name: Compare with previous model
         run: |
           python3 - <<'EOF'
-          import boto3, json, os
+          import boto3, json
           new_acc = float("${{ needs.train.outputs.accuracy }}")
           s3 = boto3.client("s3")
           bucket = "${{ secrets.CLOUD_BUCKET }}"
@@ -136,7 +136,10 @@ jobs:
           except Exception:
               print("[INFO] Không tìm thấy metrics cũ trên S3 — đây là lần deploy đầu tiên.")
           # Upload metrics mới lên S3 để lần sau so sánh
-          s3.upload_file("outputs/metrics.json", bucket, "models/latest/metrics.json")
+          new_metrics = {"accuracy": new_acc}
+          with open("/tmp/new_metrics.json", "w") as f:
+              json.dump(new_metrics, f)
+          s3.upload_file("/tmp/new_metrics.json", bucket, "models/latest/metrics.json")
           print("Metrics uploaded to S3 for future comparison.")
           EOF
 
